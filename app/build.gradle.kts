@@ -12,8 +12,8 @@ android {
         applicationId = "com.pokey8680.connect3"
         minSdk = 24
         targetSdk = 35
-        versionCode = 20250204
-        versionName = "2025.02.04"
+        versionCode = 20250205
+        versionName = "2025.02.05"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
