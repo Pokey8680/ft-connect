@@ -2,6 +2,7 @@ package com.pokey8680.connect3
 
 import android.Manifest
 import android.os.Bundle
+import android.webkit.PermissionRequest
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -106,9 +107,11 @@ fun NoLinkScreen(modifier: Modifier = Modifier, onOpenUrl: (String) -> Unit) {
 
 @Composable
 fun FaceTimeWebView(url: String, modifier: Modifier = Modifier) {
+    val context = LocalContext.current
+
     AndroidView(
-        factory = { context ->
-            WebView(context).apply {
+        factory = { ctx ->
+            WebView(ctx).apply {
                 settings.apply {
                     javaScriptEnabled = true
                     domStorageEnabled = true
@@ -117,19 +120,31 @@ fun FaceTimeWebView(url: String, modifier: Modifier = Modifier) {
                     databaseEnabled = true
                     allowContentAccess = true
                     allowFileAccess = true
+                    mediaPlaybackRequiresUserGesture = false
                 }
-                webChromeClient = WebChromeClient()
+
+                webChromeClient = object : WebChromeClient() {
+                    override fun onPermissionRequest(request: PermissionRequest?) {
+                        request?.grant(request.resources) // Auto-grant permissions
+                    }
+                }
+
                 webViewClient = object : WebViewClient() {
-                    override fun shouldOverrideUrlLoading(view: WebView?, request: android.webkit.WebResourceRequest?): Boolean {
+                    override fun shouldOverrideUrlLoading(
+                        view: WebView?,
+                        request: android.webkit.WebResourceRequest?
+                    ): Boolean {
                         return false
                     }
                 }
+
                 loadUrl(url)
             }
         },
         modifier = modifier.fillMaxSize()
     )
 }
+
 
 @Composable
 fun RequestPermissions() {
