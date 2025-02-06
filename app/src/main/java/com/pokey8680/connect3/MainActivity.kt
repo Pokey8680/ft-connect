@@ -107,11 +107,9 @@ fun NoLinkScreen(modifier: Modifier = Modifier, onOpenUrl: (String) -> Unit) {
 
 @Composable
 fun FaceTimeWebView(url: String, modifier: Modifier = Modifier) {
-    val context = LocalContext.current
-
     AndroidView(
-        factory = { ctx ->
-            WebView(ctx).apply {
+        factory = { context ->
+            WebView(context).apply {
                 settings.apply {
                     javaScriptEnabled = true
                     domStorageEnabled = true
@@ -120,20 +118,16 @@ fun FaceTimeWebView(url: String, modifier: Modifier = Modifier) {
                     databaseEnabled = true
                     allowContentAccess = true
                     allowFileAccess = true
-                    mediaPlaybackRequiresUserGesture = false
                 }
 
                 webChromeClient = object : WebChromeClient() {
                     override fun onPermissionRequest(request: PermissionRequest?) {
-                        request?.grant(request.resources) // Auto-grant permissions
+                        request?.grant(request.resources) // Grant camera & mic
                     }
                 }
 
                 webViewClient = object : WebViewClient() {
-                    override fun shouldOverrideUrlLoading(
-                        view: WebView?,
-                        request: android.webkit.WebResourceRequest?
-                    ): Boolean {
+                    override fun shouldOverrideUrlLoading(view: WebView?, request: android.webkit.WebResourceRequest?): Boolean {
                         return false
                     }
                 }
@@ -146,13 +140,15 @@ fun FaceTimeWebView(url: String, modifier: Modifier = Modifier) {
 }
 
 
+
+
 @Composable
 fun RequestPermissions() {
     val permissions = arrayOf(Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO)
     val context = LocalContext.current
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { granted: Map<String, Boolean> ->
         if (!granted.values.all { it }) {
-            Toast.makeText(context, "Permissions required for FaceTime", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Camera & Mic permissions required", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -160,3 +156,4 @@ fun RequestPermissions() {
         launcher.launch(permissions)
     }
 }
+
